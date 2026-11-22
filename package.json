@@ -1,0 +1,11 @@
+{
+  "name": "app-foundry-unified-preview",
+  "version": "0.2.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify": "node verify-forge.cjs"
+  }
+}

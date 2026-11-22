@@ -1,0 +1,10 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import * as F from '../web/modules/forge/engine.mjs';
+const id='forge-a1111111-1111-4111-8111-111111111111';
+const now='2026-11-20T20:00:00Z';
+const project=()=>F.newProject({title:'My first paid guide',kind:'guide',description:'Help new creators build a simple guide'},id,now);
+test('idea becomes a real local project with 0 percent milestones completed',()=>{const p=project();assert.equal(p.stage,'idea');assert.ok(p.tasks.length>=4);assert.equal(F.progress(p),0);assert.ok(p.chapters.length>=5);assert.equal(F.validateLibrary([p]).length,1)});
+test('milestones are explicitly checked, never automatically claimed',()=>{const p=project();const done=F.toggleTask(p,p.tasks[0].id);assert.ok(F.progress(done)>0);assert.equal(F.progress(p),0);assert.equal(F.toggleTask(done,p.tasks[0].id).tasks[0].done,false)});
+test('chapter edits, Markdown export and stage changes are bounded',()=>{const p=project();const x=F.updateChapter(p,p.chapters[0].id,'The first working draft');assert.match(F.exportMarkdown(x),/The first working draft/);const next=F.patch(x,{stage:'build'});assert.equal(next.stage,'build');assert.throws(()=>F.patch(next,{stage:'teleported'}));assert.throws(()=>F.updateChapter(p,p.chapters[0].id,'x'.repeat(12001)))});
+test('idea to Charlie creates preparation record only, not invoices or payments',()=>{const p=project();const h=F.handoff(p,now);assert.equal(h.project.handoffAt,now);assert.equal(h.venture.stage,'preparation');assert.equal(h.venture.forgeId,p.id);assert.equal(h.venture.checklist.length,4);assert.ok(!('invoices' in h.venture));assert.ok(!('payment' in h.venture));assert.equal(F.validateVentures([h.venture]).length,1);assert.throws(()=>F.handoff(h.project,now))});
+test('corrupt projects and duplicate business handoffs are rejected',()=>{const p=project();assert.throws(()=>F.validateLibrary([p,p]));assert.throws(()=>F.validateLibrary([{...p,tasks:[{id:'bad',title:'abc',done:true}]}]));const h=F.handoff(p,now);assert.throws(()=>F.validateVentures([h.venture,h.venture]));assert.throws(()=>F.validateVentures('oops'))});

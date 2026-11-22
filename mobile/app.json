@@ -1,0 +1,33 @@
+{
+    "expo":  {
+                 "name":  "App Foundry",
+                 "slug":  "app-foundry",
+                 "owner":  "sophiajade",
+                 "version":  "0.2.0",
+                 "orientation":  "portrait",
+                 "icon":  "./assets/icon.png",
+                 "userInterfaceStyle":  "automatic",
+                 "ios":  {
+                             "supportsTablet":  true,
+                             "bundleIdentifier":  "uk.co.sjinsides.appfoundry",
+                             "buildNumber":  "2"
+                         },
+                 "android":  {
+                                 "package":  "uk.co.sjinsides.appfoundry",
+                                 "adaptiveIcon":  {
+                                                      "backgroundColor":  "#FFFFFF",
+                                                      "foregroundImage":  "./assets/android-icon-foreground.png"
+                                                  },
+                                 "predictiveBackGestureEnabled":  false,
+                                 "versionCode":  2
+                             },
+                 "web":  {
+                             "favicon":  "./assets/favicon.png"
+                         },
+                 "extra":  {
+                               "eas":  {
+                                           "projectId":  "c4ce5f46-b513-4468-b6a7-db9dea95ca57"
+                                       }
+                           }
+             }
+}
