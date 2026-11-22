@@ -1,0 +1,31 @@
+name: Publish verified Android beta APK
+on:
+  push:
+    tags:
+      - 'android-v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and verify signed Expo APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          curl --fail --location --retry 3 --silent --show-error 'https://expo.dev/artifacts/eas/5FG17Uu8dwYeUH5C0GxaZ9g1yXqMp3uEKyGFyoyv6gU.apk' --output 'release/App-Foundry-v0.2.0-beta.apk'
+          echo 'eac0ee070de567a936b207ea0d0a771f89b9f735a80205605344e1beb3b12aa6  release/App-Foundry-v0.2.0-beta.apk' | sha256sum --check --status
+          test "$(stat -c%s 'release/App-Foundry-v0.2.0-beta.apk')" -gt 1000000
+          echo 'APK downloaded and SHA256 verified'
+      - name: Publish GitHub public prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "${GITHUB_REF_NAME}" 'release/App-Foundry-v0.2.0-beta.apk' --title 'App Foundry 0.2.0 beta' --notes-file '.github/release-notes/android-beta.md' --prerelease --verify-tag
